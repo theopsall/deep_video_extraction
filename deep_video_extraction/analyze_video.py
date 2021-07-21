@@ -8,8 +8,7 @@ def read(video: str) -> np.ndarray:
         fps = int(cap.get(cv2.CAP_PROP_FPS))  # frame per second for the current video in order to average the frames
     except ValueError:
         assert f"Cannot convert video {video} fps to integer"
-    # return a matrix shape (seconds, 1 )
-    # print(fps)
+
     success = True
     count = 0
     average_frames = []
@@ -32,5 +31,5 @@ def main():
 
 
 if __name__ == "__main__":
-    average = read('videos/sample.mp4')
+    average = read('videos/samples.mp4')
     print(type(average))

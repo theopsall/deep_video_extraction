@@ -4,13 +4,16 @@ from torchvision import models, transforms, datasets
 
 
 class VisualExtractor(nn.Module):
-    def __init__(self):
+    def __init__(self) -> None:
         super(VisualExtractor, self).__init__()
         self._rn18 = models.resnet18(pretrained=True)
         self.model = nn.Sequential(*list(self._rn18.children())[:-1])
 
     def forward(self, x):
         return self.model(x)
+
+    def predict(self, testLoader) -> list:
+        pass
 
 
 def main():
@@ -21,11 +24,15 @@ def main():
                             download=True,
                             transform=transform,
                             train=False)
-    testLoader = DataLoader(test, batch_size=2, shuffle=False,  num_workers=2)
+    testLoader = DataLoader(test, batch_size=2, shuffle=False, num_workers=2)
     vs = VisualExtractor()
-
+    print(type(test))
+    print(test)
+    exit()
     for i, data in enumerate(testLoader):
         images, labels = data
+        print(images.shape)
+        break
         predicted = vs(images)
         print(predicted[0])
         print(predicted[0].flatten().shape)
