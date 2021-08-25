@@ -9,6 +9,13 @@ This repo is used to extract deep features representation for video inputs using
 VGG 19 is used as deep feature extractor. 
 The code is structured in pyTorch.
 
+##Installation
 ```bash
 pip install -r requirements.txt
+```
+
+##Usage
+### Get deep features
+```bash
+python3 
 ```
