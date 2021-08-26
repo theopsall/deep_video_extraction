@@ -16,7 +16,7 @@ cd deep_video_extraction
 pip install -r requirements.txt
 ```
 
-##Usage
+## Usage
 ### 1. Get deep video features
 To extract the deep video features run the following command:  
 
