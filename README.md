@@ -11,11 +11,76 @@ The code is structured in pyTorch.
 
 ##Installation
 ```bash
+git clone https://github.com/theopsall/deep_video_extraction.git
+cd deep_video_extraction
 pip install -r requirements.txt
 ```
 
 ##Usage
-### Get deep features
+### 1. Get deep video features
+To extract the deep video features run the following command:  
+
 ```bash
-python3 
+python3 extract
+```
+`-d`:
+
+`-v`:
+
+`-l`:
+
+`-m`:
+
+
+OR call the python function: 
+
+
+```python
+
+```
+### 2. Get visual deep video features
+To extract only the visual deep video features run the following command:  
+
+
+```bash
+python3 extractVisual
+```
+`-d`:
+
+`-v`:
+
+`-l`:
+
+`-m`:
+
+
+OR call the python function: 
+
+
+
+```python
+
+```
+### 3. Get aural deep video features
+To extract only the aural deep video features run the following command:  
+
+
+```bash
+python3 extractAural
+```
+`-d`:
+
+`-v`:
+
+`-l`:
+
+`-m`:
+
+
+OR call the python function: 
+
+
+
+```python
+
 ```

@@ -1,30 +1,54 @@
 import argparse
 import os
-import numpy as np
+
 import cv2
+import numpy as np
 
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mkv', 'webm'}
 
 
 def parse_arguments() -> argparse.Namespace:
     """
-    Command line argument parser
     Returns:
-        parser: Argument Parser
+        (argparse.Namespace): Returns the parsed args of the parser
     """
-    visual_extraction = argparse.ArgumentParser(description="Visual Deep Feature Extraction")
+    epilog = """
+        python3 deep_feature_extraction extract 
+        python3 deep_feature_extraction extractVisual
+        python3 deep_feature_extraction extractAural
 
-    visual_extraction.add_argument("-a", "--audio", help="Input audio data")
-    visual_extraction.add_argument("-g", "--groundtruth", help="Ground truth data")
-    visual_extraction.add_argument("-o", "--output",
-                                   default='smoted_svc',
-                                   help="Output filename for classifier")
+        """
+    parser = argparse.ArgumentParser(description="Video Summarization application",
+                                     formatter_class=argparse.RawTextHelpFormatter, epilog=epilog)
 
-    visual_extraction.add_argument("-res", "--resampled",
-                                   default=2000, type=int,
-                                   help="Number of resampled data")
+    tasks = parser.add_subparsers(title="subcommands", description="available tasks", dest="task", metavar="")
 
-    return visual_extraction.parse_args()
+    extract = tasks.add_parser("extract", help=" Extract the deep video features")
+    extract.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
+                         help="Number of Layers to exclude from the pretrained model")
+    extract.add_argument("-m", "--model", nargs='?', default='vgg19', type=str,
+                         help="The pretrained model")
+    extract.add_mutually_exclusive_group(required=True)
+    extract.add_argument("-v", "--video", required=False, help="Video Input File")
+    extract.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
+
+    '''
+    visual_extraction = tasks.add_parser("extractVisual", help=" Extract only the visual deep video features")
+    visual_extraction.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
+                                   help="Number of Layers to exclude from the pretrained model")
+    visual_extraction.add_mutually_exclusive_group(required=True)
+    visual_extraction.add_argument("-v", "--video", required=False, help="Video Input File")
+    visual_extraction.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
+
+    aural_extraction = tasks.add_parser("extractAural", help=" Extract only the aural deep video features")
+    aural_extraction.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
+                                  help="Number of Layers to exclude from the pretrained model")
+    aural_extraction.add_mutually_exclusive_group(required=True)
+    aural_extraction.add_argument("-v", "--video", required=False, help="Video Input File")
+    aural_extraction.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
+    '''
+
+    return parser.parse_args()
 
 
 def is_dir(directory: str) -> bool:
@@ -32,25 +56,23 @@ def is_dir(directory: str) -> bool:
 
 
 def is_file(filename: str) -> bool:
-    pass
+    return os.path.isfile(filename)
 
 
 def is_video(video: str) -> bool:
-    pass
+    return video.split('.')[-1] in ALLOWED_EXTENSIONS
 
 
 def crawl_directory(directory: str) -> list:
     if not is_dir(directory):
         raise FileNotFoundError
 
-    tree = []
     subdirs = [folder[0] for folder in os.walk(directory)]
 
     for subdir in subdirs:
         files = next(os.walk(subdir))[2]
         for _file in files:
-            tree.append(os.path.join(subdir, _file))
-    return tree
+            yield os.path.join(subdir, _file)
 
 
 def read_video():
@@ -68,6 +90,7 @@ def isolate_audio(path: str):
 
 def get_spectrogram(audio):
     pass
+
 
 def analyze_video(video: str, batch_size: int) -> np.ndarray:
     cap = cv2.VideoCapture(video)

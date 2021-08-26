@@ -1,5 +1,5 @@
 from deep_video_extraction.utils import utils
-from deep_video_extraction.Extractors import visualExtractor as vsE
+from deep_video_extraction.extractors import VisualExtractor as vsE
 from torch.utils.data import DataLoader
 import torch
 
