@@ -11,9 +11,7 @@ def main():
     tree = utils.crawl_directory(
         '/media/theo/Hard Disk 2/projects_git/deep_video_extraction/data')
     frames = utils.analyze_video(tree[0])
-    print(len(frames))
-    print(frames[0].shape)
-    VE.extract(frames[0])
+    out = VE.extract(frames)
 
 
 if __name__ == "__main__":

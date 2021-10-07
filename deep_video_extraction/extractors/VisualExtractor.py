@@ -4,6 +4,7 @@ from config import MEAN, STD
 from torch.utils.data import DataLoader
 from torchvision import models, transforms
 from utils.utils import device
+from numpy import ndarray
 
 
 class VisualExtractor(nn.Module):
@@ -40,10 +41,21 @@ class VisualExtractor(nn.Module):
         return out
 
     def extract(self, x):
-        with torch.no_grad():
-            x = self.transform(x)
-            out = self.model(x)
-            print(out.shape)
-            out = torch.flatten(out)
-            print(out.shape)
-        return out
+        if type(x) == ndarray:
+            with torch.no_grad():
+                x = self.transform(x)
+                out = self.model(x)
+                print(out.shape)
+                out = torch.flatten(out)
+                print(out.shape)
+                return out
+        if type(x) == list:
+            out = []
+            with torch.no_grad():
+                for frame in x:
+                    frame = self.transform(frame)
+                    output = self.model(frame)
+                    output = torch.flatten(output)
+                    out.append(output)
+
+            return out

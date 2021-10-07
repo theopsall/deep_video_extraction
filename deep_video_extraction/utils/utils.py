@@ -78,13 +78,12 @@ def analyze_video(video: str) -> np.ndarray:
         assert f"Cannot convert video {video} fps to integer"
     print(fps)
     success = True
-    count = 0
     batches = []
-    average_frames = []
-    tmp_frames = []
+
     while success:
         success, frame = cap.read()
-        batches.append(np.array(frame))
+        if success:
+            batches.append(np.array(frame))
     return batches
 
 
@@ -122,7 +121,7 @@ def parse_arguments() -> argparse.Namespace:
         (argparse.Namespace): Returns the parsed args of the parser
     """
     epilog = """
-        python3 deep_feature_extraction extract 
+        python3 deep_feature_extraction extract
         python3 deep_feature_extraction extractVisual
         python3 deep_feature_extraction extractAural
 
