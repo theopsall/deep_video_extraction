@@ -14,7 +14,7 @@ def device():
     Check if cuda is avaliable else choose the cpu
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f'Torch is using {device}')
+    print(f'pyTorch is using {device}')
     return device
 
 

@@ -1,19 +1,19 @@
-from utils import utils
-from extractors.VisualExtractor import VisualExtractor
-from torch.utils.data import DataLoader
 import torch
+from torch.utils.data import DataLoader
+
+from extractors.VisualExtractor import VisualExtractor
+from utils import utils
 
 
 def main():
-    device = utils.device()
     utils.seed_everything()
-    VE = VisualExtractor(4)
-    print(VE)
+    VE = VisualExtractor(model='vgg', layers=2)
     tree = utils.crawl_directory(
         '/media/theo/Hard Disk 2/projects_git/deep_video_extraction/data')
     frames = utils.analyze_video(tree[0])
-    print(utils.device())
     print(len(frames))
+    print(frames[0].shape)
+    VE.extract(frames[0])
 
 
 if __name__ == "__main__":
