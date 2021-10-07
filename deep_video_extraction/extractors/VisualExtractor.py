@@ -28,7 +28,7 @@ class VisualExtractor(nn.Module):
             return models.vgg19(pretrained=True)
         if(self.name == 'alexnet'):
             return models.alexnet(pretrained=True)
-        print(f'Wrong model selection: {self.name}')
+        raise Exception(f'Wrong model selection: {self.name}')
 
     def transform(self, x):
         return self.normalize(self.to_tensor(
