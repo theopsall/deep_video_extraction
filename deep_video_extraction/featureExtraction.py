@@ -1,23 +1,20 @@
-from deep_video_extraction.utils import utils
-from deep_video_extraction.extractors import VisualExtractor as vsE
+from utils import utils
+from extractors.VisualExtractor import VisualExtractor
 from torch.utils.data import DataLoader
 import torch
 
 
-
-
 def main():
-    tree = utils.crawl_directory('videos')
-    frames = utils.analyze_video(tree[0], 10)
-    vs = vsE.VisualExtractor()
-    for i in frames:
-        print(i)
-        print(i.shape)
-        print(i.shape)
-        new_u = torch.from_numpy(i)
-        print(new_u.shape)
-        predict = vs(new_u)
-        print(predict.shape)
+    device = utils.device()
+    utils.seed_everything()
+    VE = VisualExtractor(4)
+    print(VE)
+    tree = utils.crawl_directory(
+        '/media/theo/Hard Disk 2/projects_git/deep_video_extraction/data')
+    frames = utils.analyze_video(tree[0])
+    print(utils.device())
+    print(len(frames))
+
 
 if __name__ == "__main__":
     main()
