@@ -84,10 +84,10 @@ def analyze_video(video: str) -> np.ndarray:
         success, frame = cap.read()
         if success:
             batches.append(np.array(frame))
-    return batches
+    return batches, fps
 
 
-def analyze_video_in_batches(video: str, batch_size: int) -> np.ndarray:
+def analyze_video_in_batches(video: str, batch_size: int):
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
@@ -97,22 +97,22 @@ def analyze_video_in_batches(video: str, batch_size: int) -> np.ndarray:
     success = True
     count = 0
     batches = []
-    average_frames = []
     tmp_frames = []
     while success:
         success, frame = cap.read()
-        if (count + 1) % (fps + 1) == 0:
-            batches.append(tmp_frames)
-            tmp_frames = []
-            if len(batches) == batch_size:
-                yield batches
-                batches = []
-        else:
-            tmp_frames.append(frame)
-        count += 1
+        if success:
+            if (count + 1) % (fps + 1) == 0:
+                batches.append(np.array(tmp_frames))
+                tmp_frames = []
+                if len(batches) == batch_size:
+                    yield np.array(batches)
+                    batches = []
+            else:
+                tmp_frames.append(np.array(frame))
+            count += 1
     if batches:
         # return remaining batches
-        yield np.average(tmp_frames)
+        yield np.array(tmp_frames)
 
 
 def parse_arguments() -> argparse.Namespace:
