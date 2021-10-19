@@ -5,6 +5,7 @@ import random
 import cv2
 import numpy as np
 import torch
+from PIL import Image
 
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mkv', 'webm'}
 
@@ -14,6 +15,7 @@ def device():
     Check if cuda is avaliable else choose the cpu
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cpu')
     print(f'pyTorch is using {device}')
     return device
 
@@ -25,6 +27,10 @@ def seed_everything(seed: int = 42):
     torch.backends.cudnn.deterministic = True
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+
+
+def clean_GPU():
+    return torch.cuda.empty_cache()
 
 
 def is_dir(directory: str) -> bool:
@@ -87,13 +93,19 @@ def analyze_video(video: str) -> np.ndarray:
     return batches, fps
 
 
-def analyze_video_in_batches(video: str, batch_size: int):
+def analyze_video_in_batches(video: str, batch_size: int = 32):
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
         fps = int(cap.get(cv2.CAP_PROP_FPS))
     except ValueError:
         assert f"Cannot convert video {video} fps to integer"
+    try:
+        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    except ValueError:
+        assert f"Cannot convert video {video} duration to integer"
+    duration = frame_count/fps
+    print(f'Current Video Proccessing FPS: {fps} with duration: {duration}')
     success = True
     count = 0
     batches = []
@@ -101,18 +113,22 @@ def analyze_video_in_batches(video: str, batch_size: int):
     while success:
         success, frame = cap.read()
         if success:
-            if (count + 1) % (fps + 1) == 0:
-                batches.append(np.array(tmp_frames))
-                tmp_frames = []
-                if len(batches) == batch_size:
-                    yield np.array(batches)
-                    batches = []
+            if len(batches) == batch_size:
+                yield batches
+                batches = []
             else:
-                tmp_frames.append(np.array(frame))
+                batches.append(np.array(frame))
             count += 1
     if batches:
         # return remaining batches
-        yield np.array(tmp_frames)
+        yield batches
+
+
+def save_frames(video: str, destination: str):
+    frames, fps = analyze_video(video)
+    for idx, frame in enumerate(frames):
+        Image.fromarray(frame).save(
+            os.path.join(destination, f'frame_{idx}.png'))
 
 
 def parse_arguments() -> argparse.Namespace:
