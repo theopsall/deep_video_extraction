@@ -128,7 +128,7 @@ def save_frames(video: str, destination: str):
     frames, fps = analyze_video(video)
     for idx, frame in enumerate(frames):
         Image.fromarray(frame).save(
-            os.path.join(destination, f'frame_{idx}.png'))
+            os.path.join(destination, f'frame_{idx}_{fps}.png'))
 
 
 def parse_arguments() -> argparse.Namespace:
