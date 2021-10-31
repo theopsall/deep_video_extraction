@@ -15,7 +15,7 @@ def device():
     Check if cuda is avaliable else choose the cpu
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # device = torch.device('cpu')
+    # device = torch.device('cpu') # For testing purposes
     print(f'pyTorch is using {device}')
     return device
 
@@ -117,7 +117,7 @@ def analyze_video_in_batches(video: str, batch_size: int = 32):
                 yield batches
                 batches = []
             else:
-                batches.append(np.array(frame))
+                batches.append(np.array(frame).astype(np.float32))
             count += 1
     if batches:
         # return remaining batches
