@@ -1,8 +1,12 @@
+autopep8==1.6.0
 numpy==1.21.2
 opencv-python==4.5.3.56
 Pillow==8.3.2
-torch==1.9.1+cu111
-torchaudio==0.9.1
-torchvision==0.10.1+cu111
-tqdm==4.62.3
+--find https://download.pytorch.org/whl/cu113/torch_stable.html
+torch==1.10.0+cu113 
+--find https://download.pytorch.org/whl/cu113/torch_stable.html
+torchaudio==0.10.0+cu113
+--find https://download.pytorch.org/whl/cu113/torch_stable.html
+torchvision==0.11.1+cu113
+tqdm==4.46.0
 typing-extensions==3.10.0.2
