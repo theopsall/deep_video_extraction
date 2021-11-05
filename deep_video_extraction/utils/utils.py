@@ -79,18 +79,19 @@ def analyze_video(video: str) -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        fps = int(cap.get(cv2.CAP_PROP_FPS)) + 1
     except ValueError:
         assert f"Cannot convert video {video} fps to integer"
-    print(fps)
+    print(f'Proccessing {video} with: {fps} fps')
     success = True
     batches = []
 
     while success:
         success, frame = cap.read()
         if success:
+            frame = cv2.resize(frame, (224, 224))
             batches.append(np.array(frame))
-    return batches, fps
+    return np.array(batches), fps
 
 
 def analyze_video_in_batches(video: str, batch_size: int = 32):

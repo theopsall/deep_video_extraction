@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 from config import MEAN, STD
+from numpy import ndarray
 from torch.utils.data import DataLoader
 from torchvision import models, transforms
-from utils.utils import device
-from numpy import ndarray
+from utils.utils import clean_GPU, device
 
 
 class VisualExtractor(nn.Module):
@@ -35,27 +35,13 @@ class VisualExtractor(nn.Module):
         return self.normalize(self.to_tensor(
             x)).unsqueeze(0).to(self.device)
 
-    def forward(self, x):
-        x = self.transform(x)
-        out = self.model(x)
+    def extract(self, testLoader: DataLoader) -> ndarray:
+        out = []
+        for batch in testLoader:
+            with torch.no_grad():
+                batch = batch.to(self.device)
+                output = self.model(batch)
+                output = torch.flatten(output)
+                out.append(output)
+
         return out
-
-    def extract(self, x):
-        if type(x) == ndarray:
-            with torch.no_grad():
-                x = self.transform(x)
-                out = self.model(x)
-                print(out.shape)
-                out = torch.flatten(out)
-                print(out.shape)
-                return out
-        if type(x) == list:
-            out = []
-            with torch.no_grad():
-                for frame in x:
-                    frame = self.transform(frame)
-                    output = self.model(frame)
-                    output = torch.flatten(output)
-                    out.append(output)
-
-            return out

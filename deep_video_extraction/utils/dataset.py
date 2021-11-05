@@ -19,6 +19,6 @@ class VideoDataset(Dataset):
         frame = self.frames[index]
 
         if self.transform is not None:
-            augmentations = self.transform(frame=frame)
-            frame = augmentations['frame']
+            frame = self.transform(frame)
+
         return frame
