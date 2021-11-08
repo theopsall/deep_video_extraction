@@ -35,6 +35,7 @@ def clean_GPU():
 
 
 def timeit(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time()
         func(*args, **kwargs)
