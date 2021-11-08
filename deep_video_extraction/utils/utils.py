@@ -1,8 +1,9 @@
-from time import time
 import argparse
 import os
 import random
 from functools import wraps
+from time import time
+
 import cv2
 import numpy as np
 import torch
