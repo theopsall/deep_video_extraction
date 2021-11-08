@@ -5,6 +5,7 @@ from numpy import ndarray
 from torch.utils.data import DataLoader
 from torchvision import models, transforms
 from utils.utils import clean_GPU, device
+from tqdm import tqdm
 
 
 class VisualExtractor(nn.Module):
@@ -37,10 +38,10 @@ class VisualExtractor(nn.Module):
 
     def extract(self, testLoader: DataLoader) -> ndarray:
         out = []
-        for batch in testLoader:
-            with torch.no_grad():
-                batch = batch.to(self.device)
-                output = self.model(batch)
-                # output = torch.flatten(output)
-                out.append([t for t in output])
+        with torch.no_grad():
+            with tqdm(testLoader, unit="batch", position=0, leave=True) as tepoch:
+                for batch in testLoader:
+                    batch = batch.to(self.device)
+                    output = self.model(batch)
+                    out.append([t for t in output])
         return out
