@@ -41,7 +41,6 @@ class VisualExtractor(nn.Module):
             with torch.no_grad():
                 batch = batch.to(self.device)
                 output = self.model(batch)
-                output = torch.flatten(output)
-                out.append(output)
-
+                # output = torch.flatten(output)
+                out.append([t for t in output])
         return out

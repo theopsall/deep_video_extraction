@@ -1,7 +1,8 @@
+from time import time
 import argparse
 import os
 import random
-
+from functools import wraps
 import cv2
 import numpy as np
 import torch
@@ -31,6 +32,15 @@ def seed_everything(seed: int = 42):
 
 def clean_GPU():
     return torch.cuda.empty_cache()
+
+
+def timeit(func):
+    def wrapper(*args, **kwargs):
+        start = time()
+        func(*args, **kwargs)
+        end = time()
+        print(f'{func.__name__} took {end - start} seconds')
+    return wrapper
 
 
 def is_dir(directory: str) -> bool:
@@ -150,7 +160,7 @@ def parse_arguments() -> argparse.Namespace:
         title="subcommands", description="available tasks", dest="task", metavar="")
 
     extract = tasks.add_parser(
-        "extract", help=" Extract the deep video features")
+        "extract", help=" Extract deep video features")
     extract.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
                          help="Number of Layers to exclude from the pretrained model")
     extract.add_argument("-m", "--model", nargs='?', default='vgg19', type=str,
@@ -162,19 +172,19 @@ def parse_arguments() -> argparse.Namespace:
                          help="Videos Input Directory")
 
     '''
-    visual_extraction = tasks.add_parser("extractVisual", help=" Extract only the visual deep video features")
-    visual_extraction.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
+    visual = tasks.add_parser("visual", help=" Extract only the visual deep video features")
+    visual.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
                                    help="Number of Layers to exclude from the pretrained model")
-    visual_extraction.add_mutually_exclusive_group(required=True)
-    visual_extraction.add_argument("-v", "--video", required=False, help="Video Input File")
-    visual_extraction.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
+    visual.add_mutually_exclusive_group(required=True)
+    visual.add_argument("-v", "--video", required=False, help="Video Input File")
+    visual.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
 
-    aural_extraction = tasks.add_parser("extractAural", help=" Extract only the aural deep video features")
-    aural_extraction.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
+    aural = tasks.add_parser("aural", help=" Extract only the aural deep video features")
+    aural.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
                                   help="Number of Layers to exclude from the pretrained model")
-    aural_extraction.add_mutually_exclusive_group(required=True)
-    aural_extraction.add_argument("-v", "--video", required=False, help="Video Input File")
-    aural_extraction.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
+    aural.add_mutually_exclusive_group(required=True)
+    aural.add_argument("-v", "--video", required=False, help="Video Input File")
+    aural.add_argument("-d", "--dir", required=False, help="Videos Input Directory")
     '''
 
     return parser.parse_args()
