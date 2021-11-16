@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision import models, transforms
 from utils.utils import clean_GPU, device
 from tqdm import tqdm
+from gc import collect as gc_collect
 
 
 class VisualExtractor(nn.Module):
@@ -39,9 +40,12 @@ class VisualExtractor(nn.Module):
     def extract(self, testLoader: DataLoader) -> ndarray:
         out = []
         with torch.no_grad():
-            with tqdm(testLoader, unit="batch", position=0, leave=True) as tepoch:
-                for batch in testLoader:
-                    batch = batch.to(self.device)
-                    output = self.model(batch)
-                    out.append([t for t in output])
+            for batch in testLoader:
+                batch = batch.to(self.device)
+                output = self.model(batch).to('cpu')
+                [out.append(t) for t in output]
+                del output
+                del batch
+                gc_collect()
+                torch.cuda.empty_cache()
         return out

@@ -49,6 +49,10 @@ def is_dir(directory: str) -> bool:
     return os.path.isdir(directory)
 
 
+def is_dir_empty(directory: str) -> bool:
+    return len(os.listdir(directory)) == 0
+
+
 def is_file(filename: str) -> bool:
     return os.path.isfile(filename)
 
@@ -94,7 +98,7 @@ def analyze_video(video: str) -> np.ndarray:
         fps = int(cap.get(cv2.CAP_PROP_FPS)) + 1
     except ValueError:
         assert f"Cannot convert video {video} fps to integer"
-    print(f'Proccessing {video} with: {fps} fps')
+    # print(f'Proccessing {video} with: {fps} fps')
     success = True
     batches = []
 
@@ -103,7 +107,7 @@ def analyze_video(video: str) -> np.ndarray:
         if success:
             frame = cv2.resize(frame, (224, 224))
             batches.append(np.array(frame))
-    return np.array(batches), fps
+    return np.array(batches)
 
 
 def analyze_video_in_batches(video: str, batch_size: int = 32):
