@@ -53,6 +53,14 @@ def is_dir_empty(directory: str) -> bool:
     return len(os.listdir(directory)) == 0
 
 
+def create_dir(directory: str) -> bool:
+    try:
+        return os.mkdir(directory)
+    except FileExistsError:
+        print(f'{directory} already exists')
+        return False
+
+
 def is_file(filename: str) -> bool:
     return os.path.isfile(filename)
 
@@ -74,6 +82,10 @@ def crawl_directory(directory: str) -> list:
     return tree
 
 
+def clone_structure(src: str, dst: str) -> None:
+    pass
+
+
 def read_video():
     pass
 
@@ -81,6 +93,10 @@ def read_video():
 def allowed_file(filename: str):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def get_timestamp():
+    return f'{time()}'
 
 
 def isolate_audio(path: str):
@@ -105,7 +121,7 @@ def analyze_video(video: str) -> np.ndarray:
     while success:
         success, frame = cap.read()
         if success:
-            frame = cv2.resize(frame, (224, 224))
+            frame = cv2.resize(frame, (124, 124))
             batches.append(np.array(frame))
     return np.array(batches)
 

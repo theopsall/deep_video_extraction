@@ -7,6 +7,7 @@ from torchvision import models, transforms
 from utils.utils import clean_GPU, device
 from tqdm import tqdm
 from gc import collect as gc_collect
+import numpy as np
 
 
 class VisualExtractor(nn.Module):
@@ -43,9 +44,9 @@ class VisualExtractor(nn.Module):
             for batch in testLoader:
                 batch = batch.to(self.device)
                 output = self.model(batch).to('cpu')
-                [out.append(t) for t in output]
+                [out.append(np.array(t)) for t in output]
                 del output
                 del batch
                 gc_collect()
                 torch.cuda.empty_cache()
-        return out
+        return np.array(out)
