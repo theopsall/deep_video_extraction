@@ -11,7 +11,7 @@ import numpy as np
 
 
 class VisualExtractor(nn.Module):
-    def __init__(self, model: str = 'resnet', layers: int = 1) -> None:
+    def __init__(self, model: str = 'vgg', layers: int = 1) -> None:
         super(VisualExtractor, self).__init__()
         self.name = model
         self._model = self.get_model()
