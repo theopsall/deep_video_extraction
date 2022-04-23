@@ -1,6 +1,6 @@
+from deep_video_extraction.config import MEAN, STD
+from deep_video_extraction.utils.utils import analyze_video
 from torch.utils.data import Dataset
-from config import MEAN, STD
-from utils.utils import analyze_video
 from torchvision import transforms
 
 

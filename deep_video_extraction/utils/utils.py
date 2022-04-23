@@ -55,7 +55,7 @@ def is_dir_empty(directory: str) -> bool:
 
 def create_dir(directory: str) -> bool:
     try:
-        return os.mkdir(directory)
+        return os.makedirs(directory)
     except FileExistsError:
         print(f'{directory} already exists')
         return False
