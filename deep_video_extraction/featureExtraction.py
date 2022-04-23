@@ -12,7 +12,7 @@ from deep_video_extraction.utils import utils
 from deep_video_extraction.utils.dataset import VideoDataset
 
 
-def extractVisual(directory: str, model: str = 'vgg' , layers: int = 2, output: str = 'output', save: bool = True) -> None:
+def extract_visual(directory: str, model: str = 'vgg' , layers: int = 2, output: str = 'output', save: bool = True) -> None:
     tree = utils.crawl_directory(directory)
     destination = None
     predictions = []
