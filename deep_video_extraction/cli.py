@@ -41,8 +41,6 @@ def main():
     """Console script for deep_video_extraction."""
     args =  parse_arguments()
 
-   
-
     if args.task == "extractVisual":
         if not is_dir(args.dir):
             raise Exception("Videos directory not found!")
