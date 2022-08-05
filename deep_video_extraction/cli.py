@@ -1,7 +1,7 @@
 """Console script for deep_video_extraction."""
 import argparse
 
-import deep_video_extraction.featureExtraction as fE
+import featureExtraction as fE
 from utils.utils import is_dir
 
 
@@ -42,7 +42,7 @@ def main():
     args =  parse_arguments()
 
     if args.task == "extractVisual":
-        if not is_dir(args.dir):
+        if not is_dir(args.input):
             raise Exception("Videos directory not found!")
         elif not args.model:
             print(f'Model is empty, using default')

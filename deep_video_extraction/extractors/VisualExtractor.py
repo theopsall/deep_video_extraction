@@ -3,8 +3,8 @@ from gc import collect as gc_collect
 import numpy as np
 import torch
 import torch.nn as nn
-from deep_video_extraction.config import MEAN, STD
-from deep_video_extraction.utils.utils import clean_GPU, device
+from config import MEAN, STD
+from utils.utils import clean_GPU, device
 from numpy import ndarray
 from torch.utils.data import DataLoader
 from torchvision import models, transforms
