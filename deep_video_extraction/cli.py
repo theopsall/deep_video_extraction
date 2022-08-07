@@ -1,7 +1,7 @@
 """Console script for deep_video_extraction."""
 import argparse
 
-import deep_video_extraction.featureExtraction as fE
+import featureExtraction as fE
 from utils.utils import is_dir
 
 
@@ -23,34 +23,33 @@ def parse_arguments() -> argparse.Namespace:
         title="subcommands", description="available tasks", dest="task", metavar="")
 
     extract = tasks.add_parser(
-        "extract", help=" Extract deep video features")
+        "extractVisual", help=" Extract deep video features")
     extract.add_argument("-i", "--input", required=False,
-                          help="Input Directory with videos")
-    extract.add_argument("-m", "--model", nargs='?', default='vgg19', type=str,
-                          help="The pretrained model")
+                         help="Input Directory with videos")
+    extract.add_argument("-m", "--model", nargs='?', default='vgg', type=str,
+                         help="The pretrained model")
     extract.add_argument("-l", "--layers", nargs='?', default=-1, type=int,
                          help="Number of Layers to exclude from the pretrained model")
     extract.add_argument("-s", "--store", required=False, type=bool,
-                          help="Store feature vectores")
+                         help="Store feature vectores")
     extract.add_argument("-o", "--output", required=False,
-                          help="Output directory")
+                         help="Output directory")
 
     return parser.parse_args()
 
+
 def main():
     """Console script for deep_video_extraction."""
-    args =  parse_arguments()
+    args = parse_arguments()
 
     if args.task == "extractVisual":
-        if not is_dir(args.dir):
+        if not is_dir(args.input):
             raise Exception("Videos directory not found!")
         elif not args.model:
             print(f'Model is empty, using default')
             args.model = 'vgg'
-        fE.extract_visual(args.dir, model=args.model, layers=args.layers, output=args.ouput, save=args.store)
+        fE.extract_visual(args.input, model=args.model)
     else:
-        print(f'Task {args.task} not Found. Please check the script description with --help option')
+        print(
+            f'Task {args.task} not Found. Please check the script description with --help option')
     return 0
-
-
-
