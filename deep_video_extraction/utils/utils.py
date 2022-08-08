@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-from utils.types import *
+from utils._types import *
 
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mkv', 'webm'}
 
@@ -109,22 +109,34 @@ def get_spectrogram(audio):
     pass
 
 
-def analyze_video(video: str, keep:str = 'first') -> np.ndarray:
+def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
-        fps = int(cap.get(cv2.CAP_PROP_FPS)) + 1
+        _FPS = int(cap.get(cv2.CAP_PROP_FPS))
+        fps = _FPS + 1
     except ValueError:
         assert f"Cannot convert video {video} fps to integer"
     # print(f'Proccessing {video} with: {fps} fps')
     success = True
     batches = []
 
+    count = 0
+
     while success:
         success, frame = cap.read()
         if success:
             frame = cv2.resize(frame, (124, 124))
-            batches.append(np.array(frame))
+            if keep == EXPORT_FIRST:
+                if count % fps == 0:
+                    batches.append(np.array(frame))
+            if keep == EXPORT_LAST:
+                if count % fps == _FPS :
+                    batches.append(np.array(frame))
+            if keep == EXPORT_ALL:
+                if count % fps == _FPS :
+                    batches.append(np.array(frame))
+        count += 1
     return np.array(batches)
 
 
