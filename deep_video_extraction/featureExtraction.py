@@ -37,21 +37,21 @@ def extract_visual(directory: str, model: str = 'vgg', layers: int = 2, output: 
         empty_cache()
         gc_collect()
 
+
 def audio_extraction(directory: str,  output: str = 'aural_output', save: bool = True) -> None:
     tree = utils.crawl_directory(directory)
     destination = None
     predictions = []
-    visual_extractor = VisualExtractor(model=model, layers=layers)
     for filepath in tree:
         print(f'Processing {filepath}')
-       
+
         filename = filepath.split(os.sep)[-1].split('.')[0]
         classname = filepath.split(os.sep)[-2]
         destination = os.path.join(output, classname)
         if not utils.is_dir(destination):
             utils.create_dir(destination)
-        utils.sound_isolation(filepath ,os.path.join(destination, f'{filename}.wav'))
-
+        utils.sound_isolation(filepath, os.path.join(
+            destination, f'{filename}.wav'))
 
 
 def extract_aural():

@@ -86,7 +86,8 @@ def crawl_directory(directory: str) -> list:
             tree.append(os.path.join(subdir, _file))
     return tree
 
-def sound_isolation(video_input: str, audio_output: str) -> bool:
+
+def sound_isolation(videopath: str, audio_output: str) -> bool:
     """
     Isolate the audio signal from a video stream
     in wav file with sampling rate= 1600 in mono channel
@@ -97,13 +98,15 @@ def sound_isolation(video_input: str, audio_output: str) -> bool:
     Returns:
         bool: True if audio isolated successfully, False otherwise
     """
-    command = "ffmpeg -i '{0}' -q:a 0 -ac 1 -ar 16000  -map a '{1}'".format(videopath, audio_output)
+    command = "ffmpeg -i '{0}' -q:a 0 -ac 1 -ar 16000  -map a '{1}'".format(
+        videopath, audio_output)
     try:
         os.system(command)
         return True
     except:
         print("Audio isolation failed")
         return False
+
 
 def clone_structure(src: str, dst: str) -> None:
     pass
@@ -130,7 +133,7 @@ def get_spectrogram(audio):
     pass
 
 
-def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
+def analyze_video(video: str, keep: str = 'last') -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
@@ -152,10 +155,10 @@ def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
                 if count % fps == 0:
                     batches.append(np.array(frame))
             if keep == EXPORT_LAST:
-                if count % fps == _FPS :
+                if count % fps == _FPS:
                     batches.append(np.array(frame))
             if keep == EXPORT_ALL:
-                if count % fps == _FPS :
+                if count % fps == _FPS:
                     batches.append(np.array(frame))
         count += 1
     return np.array(batches)
@@ -197,4 +200,3 @@ def save_frames(video: str, destination: str):
     for idx, frame in enumerate(frames):
         Image.fromarray(frame).save(
             os.path.join(destination, f'frame_{idx}_{fps}.png'))
-
