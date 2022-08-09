@@ -36,7 +36,7 @@ def parse_arguments() -> argparse.Namespace:
                          help="Output directory")
     
     sound = tasks.add_parser(
-        "extractVisual", help=" Extract deep video features")
+        "soundIsolation", help=" Extract deep video features")
     sound.add_argument("-i", "--input", required=False,
                          help="Input Directory with videos")
     sound.add_argument("-o", "--output", required=False,
