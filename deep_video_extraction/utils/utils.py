@@ -1,9 +1,12 @@
 import argparse
+from email.mime import audio
 import os
 import random
 from functools import wraps
 from time import time
+from xmlrpc.client import Boolean
 
+from subprocess import Popen, PIPE
 import cv2
 import numpy as np
 import torch
@@ -83,6 +86,20 @@ def crawl_directory(directory: str) -> list:
             tree.append(os.path.join(subdir, _file))
     return tree
 
+def sound_isolation(video_input: str, audio_output: str) -> bool:
+
+    ffmpeg_command = f'ffmpeg -i {video_input} -af silencedetect=n=-30dB:d=0.1 -f null - {audio_output}'
+    try:
+        result = Popen(
+                ffmpeg_command,
+                shell=True,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+        _, err = result.communicate()
+    except:
+        print('Error in sound isolation')
+    return len(err)
 
 def clone_structure(src: str, dst: str) -> None:
     pass
