@@ -34,6 +34,13 @@ def parse_arguments() -> argparse.Namespace:
                          help="Store feature vectores")
     extract.add_argument("-o", "--output", required=False,
                          help="Output directory")
+    
+    sound = tasks.add_parser(
+        "extractVisual", help=" Extract deep video features")
+    sound.add_argument("-i", "--input", required=False,
+                         help="Input Directory with videos")
+    sound.add_argument("-o", "--output", required=False,
+                         help="Output directory")
 
     return parser.parse_args()
 
@@ -49,6 +56,10 @@ def main():
             print(f'Model is empty, using default')
             args.model = 'vgg'
         fE.extract_visual(args.input, model=args.model)
+    elif args.task == "soundIsolation":
+        if not is_dir(args.input):
+            raise Exception("Videos directory not found!")
+        fE.audio_extraction(args.input)
     else:
         print(
             f'Task {args.task} not Found. Please check the script description with --help option')

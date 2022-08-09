@@ -87,19 +87,23 @@ def crawl_directory(directory: str) -> list:
     return tree
 
 def sound_isolation(video_input: str, audio_output: str) -> bool:
+    """
+    Isolate the audio signal from a video stream
+    in wav file with sampling rate= 1600 in mono channel
 
-    ffmpeg_command = f'ffmpeg -i {video_input} -af silencedetect=n=-30dB:d=0.1 -f null - {audio_output}'
+    Args:
+        video (str): videopath
+
+    Returns:
+        bool: True if audio isolated successfully, False otherwise
+    """
+    command = "ffmpeg -i '{0}' -q:a 0 -ac 1 -ar 16000  -map a '{1}'".format(videopath, audio_output)
     try:
-        result = Popen(
-                ffmpeg_command,
-                shell=True,
-                stdout=PIPE,
-                stderr=PIPE
-            )
-        _, err = result.communicate()
+        os.system(command)
+        return True
     except:
-        print('Error in sound isolation')
-    return len(err)
+        print("Audio isolation failed")
+        return False
 
 def clone_structure(src: str, dst: str) -> None:
     pass
