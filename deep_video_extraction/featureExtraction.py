@@ -23,7 +23,7 @@ def extract_visual(directory: str, model: str = 'vgg', layers: int = 2, output: 
         dataloader = DataLoader(dataset, batch_size=16,
                                 shuffle=False, num_workers=2)
 
-        filename = filepath.split(os.sep)[-1].split('.')[0]
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
         classname = filepath.split(os.sep)[-2]
         destination = os.path.join(output, classname)
         if not utils.is_dir(destination):
@@ -45,7 +45,7 @@ def audio_extraction(directory: str,  output: str = 'aural_output', save: bool =
     for filepath in tree:
         print(f'Processing {filepath}')
 
-        filename = filepath.split(os.sep)[-1].split('.')[0]
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
         classname = filepath.split(os.sep)[-2]
         destination = os.path.join(output, classname)
         if not utils.is_dir(destination):
