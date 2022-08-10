@@ -23,7 +23,7 @@ def parse_arguments() -> argparse.Namespace:
         title="subcommands", description="available tasks", dest="task", metavar="")
 
     extract = tasks.add_parser(
-        "extractVisual", help=" Extract deep video features")
+        "extractVisual", help="Extract deep video features from a directory of videos")
     extract.add_argument("-i", "--input", required=False,
                          help="Input Directory with videos")
     extract.add_argument("-m", "--model", nargs='?', default='vgg', type=str,
@@ -34,12 +34,19 @@ def parse_arguments() -> argparse.Namespace:
                          help="Store feature vectores")
     extract.add_argument("-o", "--output", required=False,
                          help="Output directory")
-    
+
     sound = tasks.add_parser(
-        "soundIsolation", help=" Extract deep video features")
+        "soundIsolation", help="Isolate the audio from videos input")
     sound.add_argument("-i", "--input", required=False,
                          help="Input Directory with videos")
     sound.add_argument("-o", "--output", required=False,
+                         help="Output directory")
+
+    spectro = tasks.add_parser(
+        "spectro", help="Extract spectrograms from audio files")
+    spectro.add_argument("-i", "--input", required=False,
+                         help="Input Directory with audio files")
+    spectro.add_argument("-o", "--output", required=False,
                          help="Output directory")
 
     return parser.parse_args()
