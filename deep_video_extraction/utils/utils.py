@@ -200,3 +200,27 @@ def save_frames(video: str, destination: str):
     for idx, frame in enumerate(frames):
         Image.fromarray(frame).save(
             os.path.join(destination, f'frame_{idx}_{fps}.png'))
+
+def stereo_to_mono(signal):
+    """
+    Input signal (stored in a numpy array) to MONO (if it is STEREO)
+    """
+
+    if signal.ndim == 2:
+        if signal.shape[1] == 1:
+            signal = signal.flatten()
+        else:
+            if signal.shape[1] == 2:
+                signal = (signal[:, 1] / 2) + (signal[:, 0] / 2)
+    return signal
+
+
+def get_spectrogram(audio: str, output: str) -> None:
+    """
+    Creates a spectrogram of the audio file
+    Args:
+        audio (str): The path to the audio file
+        output (str): The path to the output directory
+    """
+    # return AudioSegment.from_wav(audio).spectrogram(log=True)
+    pass
