@@ -1,16 +1,19 @@
 import argparse
-from email.mime import audio
 import os
 import random
 from functools import wraps
+from subprocess import PIPE, Popen
 from time import time
 from xmlrpc.client import Boolean
 
-from subprocess import Popen, PIPE
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from PIL import Image
+from scipy import signal
+from scipy.io import wavfile
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from utils._types import *
 
@@ -222,5 +225,12 @@ def get_spectrogram(audio: str, output: str) -> None:
         audio (str): The path to the audio file
         output (str): The path to the output directory
     """
-    # return AudioSegment.from_wav(audio).spectrogram(log=True)
-    pass
+    fs, data = wavfile.read(audio)
+    data =  stereo_to_mono(data)
+    fig,ax = plt.subplots(1)
+    fig.subplots_adjust(left=0,right=1,bottom=0,top=1)
+    ax.axis('off')
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=fs, noverlap=384, NFFT=512)
+    ax.axis('off')
+    fig.savefig(output, dpi=100, frameon='false')
+

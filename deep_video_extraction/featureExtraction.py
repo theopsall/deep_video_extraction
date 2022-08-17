@@ -54,9 +54,16 @@ def audio_extraction(directory: str,  output: str = 'aural_output', save: bool =
             destination, f'{filename}.wav'))
 
 
-def extract_aural():
-    """
-    _summary_
-    """
-    # TODO:
-    pass
+def extract_spectros(directory: str,  output: str = 'aural_output', save: bool = True) -> None:
+    tree = utils.crawl_directory(directory)
+    destination = None
+    predictions = []
+    for filepath in tree:
+        print(f'Getting Spectrogram  {filepath}')
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
+        classname = filepath.split(os.sep)[-2]
+        destination = os.path.join(output, classname)
+        if not utils.is_dir(destination):
+            utils.create_dir(destination)
+        utils.get_spectrogram(filepath, os.path.join(
+            destination, f'{filename}.png'))

@@ -67,6 +67,10 @@ def main():
         if not is_dir(args.input):
             raise Exception("Videos directory not found!")
         fE.audio_extraction(args.input)
+    elif args.task == "spectro":
+        if not is_dir(args.input):
+            raise Exception("Videos directory not found!")
+        fE.extract_spectros(args.input)
     else:
         print(
             f'Task {args.task} not Found. Please check the script description with --help option')
