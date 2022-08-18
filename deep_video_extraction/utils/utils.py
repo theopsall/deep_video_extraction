@@ -233,4 +233,5 @@ def get_spectrogram(audio: str, output: str) -> None:
     pxx, freqs, bins, im = ax.specgram(x=data, Fs=fs, noverlap=384, NFFT=512)
     ax.axis('off')
     fig.savefig(output, dpi=100, frameon='false')
+    fig.clf()
 
