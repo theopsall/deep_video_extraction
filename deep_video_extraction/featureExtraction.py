@@ -54,7 +54,7 @@ def audio_extraction(directory: str,  output: str = 'aural_output', save: bool =
             destination, f'{filename}.wav'))
 
 
-def extract_spectros(directory: str,  output: str = 'aural_output', save: bool = True) -> None:
+def extract_spectros(directory: str,  output: str = 'spectrograms_output', save: bool = True) -> None:
     tree = utils.crawl_directory(directory)
     destination = None
     predictions = []
