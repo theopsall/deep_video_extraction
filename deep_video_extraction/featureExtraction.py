@@ -67,3 +67,5 @@ def extract_spectros(directory: str,  output: str = 'spectrograms_output', save:
             utils.create_dir(destination)
         utils.get_spectrogram(filepath, os.path.join(
             destination, f'{filename}.png'))
+        gc_collect()
+
