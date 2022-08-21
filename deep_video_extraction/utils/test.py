@@ -1,15 +1,13 @@
-
 from functools import wraps
 from time import time
 
 import cv2
 import numpy as np
 
-EXPORT_ALL  = "all"
+EXPORT_ALL = "all"
 EXPORT_LAST = "last"
 EXPORT_FIRST = "first"
-EXPORT_RANDOM  = "random"
-
+EXPORT_RANDOM = "random"
 
 
 def timeit(func):
@@ -18,15 +16,17 @@ def timeit(func):
         start = time()
         func(*args, **kwargs)
         end = time()
-        print(f'{func.__name__} took {end - start} seconds')
+        print(f"{func.__name__} took {end - start} seconds")
+
     return wrapper
 
-def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
+
+def analyze_video(video: str, keep: str = "last") -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
         _FPS = int(cap.get(cv2.CAP_PROP_FPS))
-        fps = _FPS + 1  
+        fps = _FPS + 1
         print(fps)
         print(_FPS)
     except ValueError:
@@ -44,12 +44,12 @@ def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
                 if count % fps == 0:
                     batches.append(np.array(frame))
             if keep == EXPORT_LAST:
-                if count % fps == _FPS :
+                if count % fps == _FPS:
                     batches.append(np.array(frame))
             if keep == EXPORT_ALL:
-                if count % fps == _FPS :
+                if count % fps == _FPS:
                     batches.append(np.array(frame))
-        count += 1 
+        count += 1
     return np.array(batches)
 
 

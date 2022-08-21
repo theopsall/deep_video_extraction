@@ -10,23 +10,23 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from PIL import Image
 from scipy import signal
 from scipy.io import wavfile
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from utils._types import *
 
-ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mkv', 'webm'}
+ALLOWED_EXTENSIONS = {"mp4", "avi", "mkv", "webm"}
 
 
 def device():
     """
     Check if cuda is avaliable else choose the cpu
     """
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # device = torch.device('cpu') # For testing purposes
-    print(f'pyTorch is using {device}')
+    print(f"pyTorch is using {device}")
     return device
 
 
@@ -49,7 +49,8 @@ def timeit(func):
         start = time()
         func(*args, **kwargs)
         end = time()
-        print(f'{func.__name__} took {end - start} seconds')
+        print(f"{func.__name__} took {end - start} seconds")
+
     return wrapper
 
 
@@ -65,7 +66,7 @@ def create_dir(directory: str) -> bool:
     try:
         return os.makedirs(directory)
     except FileExistsError:
-        print(f'{directory} already exists')
+        print(f"{directory} already exists")
         return False
 
 
@@ -74,7 +75,7 @@ def is_file(filename: str) -> bool:
 
 
 def is_video(video: str) -> bool:
-    return video.split('.')[-1] in ALLOWED_EXTENSIONS
+    return video.split(".")[-1] in ALLOWED_EXTENSIONS
 
 
 def crawl_directory(directory: str) -> list:
@@ -102,7 +103,8 @@ def sound_isolation(videopath: str, audio_output: str) -> bool:
         bool: True if audio isolated successfully, False otherwise
     """
     command = "ffmpeg -i '{0}' -q:a 0 -ac 1 -ar 16000  -map a '{1}'".format(
-        videopath, audio_output)
+        videopath, audio_output
+    )
     try:
         os.system(command)
         return True
@@ -120,12 +122,11 @@ def read_video():
 
 
 def allowed_file(filename: str):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def get_timestamp():
-    return f'{time()}'
+    return f"{time()}"
 
 
 def isolate_audio(path: str):
@@ -136,7 +137,7 @@ def get_spectrogram(audio):
     pass
 
 
-def analyze_video(video: str, keep: str = 'last') -> np.ndarray:
+def analyze_video(video: str, keep: str = "last") -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
@@ -178,8 +179,8 @@ def analyze_video_in_batches(video: str, batch_size: int = 32):
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     except ValueError:
         assert f"Cannot convert video {video} duration to integer"
-    duration = frame_count/fps
-    print(f'Current Video Proccessing FPS: {fps} with duration: {duration}')
+    duration = frame_count / fps
+    print(f"Current Video Proccessing FPS: {fps} with duration: {duration}")
     success = True
     count = 0
     batches = []
@@ -201,8 +202,8 @@ def analyze_video_in_batches(video: str, batch_size: int = 32):
 def save_frames(video: str, destination: str):
     frames, fps = analyze_video(video)
     for idx, frame in enumerate(frames):
-        Image.fromarray(frame).save(
-            os.path.join(destination, f'frame_{idx}_{fps}.png'))
+        Image.fromarray(frame).save(os.path.join(destination, f"frame_{idx}_{fps}.png"))
+
 
 def stereo_to_mono(signal):
     """
@@ -226,12 +227,11 @@ def get_spectrogram(audio: str, output: str) -> None:
         output (str): The path to the output directory
     """
     fs, data = wavfile.read(audio)
-    data =  stereo_to_mono(data)
-    fig,ax = plt.subplots(1)
-    fig.subplots_adjust(left=0,right=1,bottom=0,top=1)
-    ax.axis('off')
+    data = stereo_to_mono(data)
+    fig, ax = plt.subplots(1)
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+    ax.axis("off")
     pxx, freqs, bins, im = ax.specgram(x=data, Fs=fs, noverlap=384, NFFT=512)
-    ax.axis('off')
-    fig.savefig(output, dpi=100, frameon='false')
+    ax.axis("off")
+    fig.savefig(output, dpi=100, frameon="false")
     fig.clf()
-

@@ -13,7 +13,7 @@ class VideoDataset(Dataset):
         self.normalize = transforms.Normalize(mean=MEAN, std=STD)
 
     def __str__(self):
-        return f'Video DataLoader'
+        return f"Video DataLoader"
 
     def __len__(self):
         return len(self.frames)
