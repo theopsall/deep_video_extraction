@@ -174,7 +174,7 @@ def analyze_spectrograms(audio: str) -> np.ndarray:
     data = stereo_to_mono(data)
     chunks = int(data.shape[0]/fs)
 
-    for i in range():
+    for i in range(chunks):
         chunk = data[i*fs:(i+1)*fs]
         specgram, TimeAxis, FreqAxi = sF.spectrogram(chunk, fs, round(fs * 0.040),
                                                      round(fs * 0.040))
@@ -183,7 +183,7 @@ def analyze_spectrograms(audio: str) -> np.ndarray:
         ax.set_axis_off()
         plt.axis('off')
         plt.tight_layout(pad=0)
-        plt.margins(0,0)
+        plt.margins(0, 0)
         plt.gca().xaxis.set_major_locator(plt.NullLocator())
         plt.gca().yaxis.set_major_locator(plt.NullLocator())
         fig.canvas.draw()
@@ -193,7 +193,7 @@ def analyze_spectrograms(audio: str) -> np.ndarray:
         data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         batches.append(cv2.resize(data, (124, 124)))
         fig.clf()
-        
+
     return np.array(batches)
 
 

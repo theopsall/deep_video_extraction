@@ -53,8 +53,9 @@ def parse_arguments() -> argparse.Namespace:
     extractVisual.add_argument(
         "-s", "--store", required=False, type=bool, help="Store feature vectors"
     )
-    extractVisual.add_argument("-o", "--output", required=False, help="Output directory")
-    
+    extractVisual.add_argument(
+        "-o", "--output", required=False, help="Output directory")
+
     extractAural = tasks.add_parser(
         "extractAural", help="Extract deep audio features from a directory of audios"
     )
@@ -82,8 +83,8 @@ def parse_arguments() -> argparse.Namespace:
     extractAural.add_argument(
         "-s", "--store", required=False, type=bool, help="Store feature vectors"
     )
-    extractAural.add_argument("-o", "--output", required=False, help="Output directory")
-
+    extractAural.add_argument(
+        "-o", "--output", required=False, help="Output directory")
 
     sound = tasks.add_parser(
         "soundIsolation", help="Isolate the audio from videos input"
@@ -91,13 +92,16 @@ def parse_arguments() -> argparse.Namespace:
     sound.add_argument(
         "-i", "--input", required=False, help="Input Directory with videos"
     )
-    sound.add_argument("-o", "--output", required=False, help="Output directory")
+    sound.add_argument("-o", "--output", required=False,
+                       help="Output directory")
 
-    spectro = tasks.add_parser("spectro", help="Extract spectrograms from audio files")
+    spectro = tasks.add_parser(
+        "spectro", help="Extract spectrograms from audio files")
     spectro.add_argument(
         "-i", "--input", required=False, help="Input Directory with audio files"
     )
-    spectro.add_argument("-o", "--output", required=False, help="Output directory")
+    spectro.add_argument("-o", "--output", required=False,
+                         help="Output directory")
 
     return parser.parse_args()
 
@@ -130,9 +134,7 @@ def main():
             args.input,
             model=args.model,
             layers=args.layers,
-            flatten=args.flatten,
             save=args.store,
-            output=args.output,
         )
     elif args.task == "soundIsolation":
         if not is_dir(args.input):
