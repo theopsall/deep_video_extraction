@@ -12,7 +12,6 @@ from utils.utils import clean_GPU, device
 
 
 class VisualExtractor(nn.Module):
-    __slots__ = (name, _model, layers, flatten, model, device, normalize, to_tensor)
 
     def __init__(
         self, model: str = "vgg", layers: int = 1, flatten: bool = False
