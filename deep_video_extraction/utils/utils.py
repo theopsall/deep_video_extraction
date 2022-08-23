@@ -139,7 +139,7 @@ def get_spectrogram(audio):
     pass
 
 
-def analyze_video(video: str, keep: str = "last") -> np.ndarray:
+def analyze_video(video: str, keep: str = 'first') -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
@@ -158,14 +158,13 @@ def analyze_video(video: str, keep: str = "last") -> np.ndarray:
         if success:
             frame = cv2.resize(frame, (124, 124))
             if keep == EXPORT_FIRST:
-                if count % fps == 0:
+                if count % _FPS == 0:
                     batches.append(np.array(frame))
             if keep == EXPORT_LAST:
-                if count % fps == _FPS:
+                if count % _FPS == _FPS - 1:
                     batches.append(np.array(frame))
             if keep == EXPORT_ALL:
-                if count % fps == _FPS:
-                    batches.append(np.array(frame))
+                batches.append(np.array(frame))
         count += 1
     return np.array(batches)
 
