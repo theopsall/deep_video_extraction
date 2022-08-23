@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import sys
 from functools import wraps
 from subprocess import PIPE, Popen
 from time import time
@@ -114,28 +115,15 @@ def sound_isolation(videopath: str, audio_output: str) -> bool:
         return False
 
 
-def clone_structure(src: str, dst: str) -> None:
-    pass
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore
 
 
-def read_video():
-    pass
-
-
-def allowed_file(filename: str):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def get_timestamp():
-    return f"{time()}"
-
-
-def isolate_audio(path: str):
-    pass
-
-
-def get_spectrogram(audio):
-    pass
+def enablePrint():
+    sys.stdout = sys.__stdout__
 
 
 def analyze_video(video: str, keep: str = 'first') -> np.ndarray:
@@ -189,10 +177,11 @@ def analyze_spectrograms(audio: str) -> np.ndarray:
         fig.canvas.draw()
 
         # Now we can save it to a numpy array.
-        data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
-        data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-        batches.append(cv2.resize(data, (124, 124)))
-        fig.clf()
+        img = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+        img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        batches.append(cv2.resize(img, (124, 124)))
+
+        plt.close(fig)
 
     return np.array(batches)
 
