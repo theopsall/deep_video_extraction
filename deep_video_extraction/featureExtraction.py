@@ -9,15 +9,15 @@ from torch.utils.data import DataLoader
 
 from extractors.VisualExtractor import VisualExtractor
 from utils import utils
-from utils.dataset import VideoDataset
+from utils.dataset import VideoDataset, SpectrogramDataset
 
 
-def extract_visual(
+def extract_visual_features(
     directory: str,
     model: str = "vgg",
     layers: int = 2,
     flatten: bool = False,
-    output: str = "visual_output",
+    output: str = "visual_features_output",
     save: bool = True,
 ) -> None:
     tree = utils.crawl_directory(directory)
@@ -43,6 +43,39 @@ def extract_visual(
         del predictions
         empty_cache()
         gc_collect()
+
+def extract_aural_features(
+    directory: str,
+    model: str = "vgg",
+    layers: int = 2,
+    flatten: bool = False,
+    output: str = "aural_features_output",
+    save: bool = True,
+) -> None:
+    tree = utils.crawl_directory(directory)
+    destination = None
+    predictions = []
+
+    visual_extractor = VisualExtractor(model=model, layers=layers, flatten=flatten)
+    for filepath in tree:
+        print(f"Processing {filepath}")
+        dataset = SpectrogramDataset(filepath)
+        dataloader = DataLoader(dataset, batch_size=16, shuffle=False, num_workers=2)
+
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
+        classname = filepath.split(os.sep)[-2]
+        destination = os.path.join(output, classname)
+        if not utils.is_dir(destination):
+            utils.create_dir(destination)
+        predictions = visual_extractor.extract(dataloader)
+
+        if save:
+            np.save(os.path.join(destination, f"{filename}.npy"), predictions)
+
+        del predictions
+        empty_cache()
+        gc_collect()
+
 
 
 def audio_extraction(

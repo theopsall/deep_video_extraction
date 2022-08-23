@@ -9,6 +9,8 @@ from xmlrpc.client import Boolean
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import pyAudioAnalysis.ShortTermFeatures as sF
+from pyAudioAnalysis import audioBasicIO
 import torch
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from PIL import Image
@@ -165,6 +167,21 @@ def analyze_video(video: str, keep: str = "last") -> np.ndarray:
                 if count % fps == _FPS:
                     batches.append(np.array(frame))
         count += 1
+    return np.array(batches)
+
+
+def analyze_spectrograms(audio: str) -> np.ndarray:
+    batches = []
+    fs, data = wavfile.read(audio)
+    data = audioBasicIO.stereo_to_mono(data)
+    chunks = int(data.shape[0]/fs)
+    
+    for i in range():
+    # print(i, [i*fs,(i+1)*fs])
+        chunk = data[i*fs:(i+1)*fs]
+        specgram, TimeAxis, FreqAxi= sF.spectrogram(chunk, fs, round(fs * 0.040),
+                                                    round(fs * 0.040))
+        batches.append(cv2.resize(specgram, (124, 124)))
     return np.array(batches)
 
 
