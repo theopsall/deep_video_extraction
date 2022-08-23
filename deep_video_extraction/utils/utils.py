@@ -178,7 +178,20 @@ def analyze_spectrograms(audio: str) -> np.ndarray:
         chunk = data[i*fs:(i+1)*fs]
         specgram, TimeAxis, FreqAxi = sF.spectrogram(chunk, fs, round(fs * 0.040),
                                                      round(fs * 0.040))
-        batches.append(cv2.resize(specgram, (124, 124)))
+        fig, ax = plt.subplots()
+        plt.pcolormesh(specgram)
+        ax.set_axis_off()
+        plt.axis('off')
+        plt.tight_layout(pad=0)
+        plt.margins(0,0)
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        fig.canvas.draw()
+
+        # Now we can save it to a numpy array.
+        data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+        data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        batches.append(cv2.resize(data, (124, 124)))
     return np.array(batches)
 
 
