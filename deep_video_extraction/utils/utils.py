@@ -192,6 +192,8 @@ def analyze_spectrograms(audio: str) -> np.ndarray:
         data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
         data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         batches.append(cv2.resize(data, (124, 124)))
+        fig.clf()
+        
     return np.array(batches)
 
 
