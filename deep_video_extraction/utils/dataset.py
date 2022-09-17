@@ -24,6 +24,24 @@ class VideoDataset(Dataset):
 
         return frame
 
+
+class OpticalFlowDataset(Dataset):
+    def __init__(self, video_path) -> None:
+        super().__init__()
+        self.video_path = video_path
+        self.frames = analyze_video(video_path)
+        self.toTensor = transforms.ToTensor()
+
+    def __str__(self):
+        return f"Video DataLoader"
+
+    def __len__(self):
+        return len(self.frames)-1
+
+    def __getitem__(self, index):
+        return self.toTensor(self.frames[index]),self.toTensor(self.frames[index+1])
+
+
 class SpectrogramDataset(Dataset):
     def __init__(self, audio_path) -> None:
         super().__init__()

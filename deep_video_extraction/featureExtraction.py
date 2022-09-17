@@ -24,13 +24,11 @@ def extract_visual_features(
     destination = None
     predictions = []
 
-    visual_extractor = VisualExtractor(
-        model=model, layers=layers, flatten=flatten)
+    visual_extractor = VisualExtractor(model=model, layers=layers, flatten=flatten)
     for filepath in tree:
         print(f"Processing {filepath}")
         dataset = VideoDataset(filepath)
-        dataloader = DataLoader(dataset, batch_size=16,
-                                shuffle=False, num_workers=2)
+        dataloader = DataLoader(dataset, batch_size=16, shuffle=False, num_workers=2)
 
         filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
         classname = filepath.split(os.sep)[-2]
@@ -46,10 +44,9 @@ def extract_visual_features(
         empty_cache()
         gc_collect()
 
-
 def extract_aural_features(
     directory: str,
-    model: str = "vgg",
+    model: str = "resnet",
     layers: int = 2,
     flatten: bool = False,
     output: str = "aural_features_output",
@@ -59,14 +56,11 @@ def extract_aural_features(
     destination = None
     predictions = []
 
-    visual_extractor = VisualExtractor(
-        model=model, layers=layers, flatten=flatten)
+    visual_extractor = VisualExtractor(model=model, layers=layers, flatten=flatten)
     for filepath in tree:
         print(f"Processing {filepath}")
-        utils.blockPrint()
         dataset = SpectrogramDataset(filepath)
-        dataloader = DataLoader(dataset, batch_size=16,
-                                shuffle=False, num_workers=2)
+        dataloader = DataLoader(dataset, batch_size=16, shuffle=False, num_workers=2)
 
         filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
         classname = filepath.split(os.sep)[-2]
@@ -78,11 +72,10 @@ def extract_aural_features(
         if save:
             np.save(os.path.join(destination, f"{filename}.npy"), predictions)
 
-        utils.enablePrint()
-
         del predictions
         empty_cache()
         gc_collect()
+
 
 
 def audio_extraction(
@@ -99,8 +92,7 @@ def audio_extraction(
         destination = os.path.join(output, classname)
         if not utils.is_dir(destination):
             utils.create_dir(destination)
-        utils.sound_isolation(filepath, os.path.join(
-            destination, f"{filename}.wav"))
+        utils.sound_isolation(filepath, os.path.join(destination, f"{filename}.wav"))
 
 
 def extract_spectros(
@@ -116,6 +108,5 @@ def extract_spectros(
         destination = os.path.join(output, classname)
         if not utils.is_dir(destination):
             utils.create_dir(destination)
-        utils.get_spectrogram(filepath, os.path.join(
-            destination, f"{filename}.png"))
+        utils.get_spectrogram(filepath, os.path.join(destination, f"{filename}.png"))
         gc_collect()

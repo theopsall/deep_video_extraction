@@ -63,7 +63,7 @@ def parse_arguments() -> argparse.Namespace:
         "-i", "--input", required=False, help="Input Directory with audios"
     )
     extractAural.add_argument(
-        "-m", "--model", nargs="?", default="vgg", type=str, help="The pretrained model"
+        "-m", "--model", nargs="?", default="resnet", type=str, help="The pretrained model"
     )
     extractAural.add_argument(
         "-l",

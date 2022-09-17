@@ -40,7 +40,5 @@ class AuralExtractor(nn.Module):
         with torch.no_grad():
             x = self.transform(x)
             out = self.model(x)
-            print(out.shape)
             out = torch.flatten(out)
-            print(out.shape)
         return out
