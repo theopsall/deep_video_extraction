@@ -1,26 +1,34 @@
 import argparse
 import os
 import random
+import sys
 from functools import wraps
+from subprocess import PIPE, Popen
 from time import time
+from xmlrpc.client import Boolean
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+import pyAudioAnalysis.ShortTermFeatures as sF
 import torch
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from PIL import Image
+from scipy import signal
+from scipy.io import wavfile
 
 from utils._types import *
 
-ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mkv', 'webm'}
+ALLOWED_EXTENSIONS = {"mp4", "avi", "mkv", "webm"}
 
 
 def device():
     """
     Check if cuda is avaliable else choose the cpu
     """
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # device = torch.device('cpu') # For testing purposes
-    print(f'pyTorch is using {device}')
+    print(f"pyTorch is using {device}")
     return device
 
 
@@ -43,7 +51,8 @@ def timeit(func):
         start = time()
         func(*args, **kwargs)
         end = time()
-        print(f'{func.__name__} took {end - start} seconds')
+        print(f"{func.__name__} took {end - start} seconds")
+
     return wrapper
 
 
@@ -59,7 +68,7 @@ def create_dir(directory: str) -> bool:
     try:
         return os.makedirs(directory)
     except FileExistsError:
-        print(f'{directory} already exists')
+        print(f"{directory} already exists")
         return False
 
 
@@ -68,7 +77,7 @@ def is_file(filename: str) -> bool:
 
 
 def is_video(video: str) -> bool:
-    return video.split('.')[-1] in ALLOWED_EXTENSIONS
+    return video.split(".")[-1] in ALLOWED_EXTENSIONS
 
 
 def crawl_directory(directory: str) -> list:
@@ -84,32 +93,40 @@ def crawl_directory(directory: str) -> list:
     return tree
 
 
-def clone_structure(src: str, dst: str) -> None:
-    pass
+def sound_isolation(videopath: str, audio_output: str) -> bool:
+    """
+    Isolate the audio signal from a video stream
+    in wav file with sampling rate= 1600 in mono channel
+
+    Args:
+        video (str): videopath
+
+    Returns:
+        bool: True if audio isolated successfully, False otherwise
+    """
+    command = "ffmpeg -i '{0}' -q:a 0 -ac 1 -ar 16000  -map a '{1}'".format(
+        videopath, audio_output
+    )
+    try:
+        os.system(command)
+        return True
+    except:
+        print("Audio isolation failed")
+        return False
 
 
-def read_video():
-    pass
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore
 
 
-def allowed_file(filename: str):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def enablePrint():
+    sys.stdout = sys.__stdout__
 
 
-def get_timestamp():
-    return f'{time()}'
-
-
-def isolate_audio(path: str):
-    pass
-
-
-def get_spectrogram(audio):
-    pass
-
-
-def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
+def analyze_video(video: str, keep: str = 'first') -> np.ndarray:
     cap = cv2.VideoCapture(video)
     try:
         # frame per second for the current video in order to average the frames
@@ -128,15 +145,45 @@ def analyze_video(video: str, keep:str = 'last') -> np.ndarray:
         if success:
             frame = cv2.resize(frame, (124, 124))
             if keep == EXPORT_FIRST:
-                if count % fps == 0:
+                if count % _FPS == 0:
                     batches.append(np.array(frame))
             if keep == EXPORT_LAST:
-                if count % fps == _FPS :
+                if count % _FPS == _FPS - 1:
                     batches.append(np.array(frame))
             if keep == EXPORT_ALL:
-                if count % fps == _FPS :
-                    batches.append(np.array(frame))
+                batches.append(np.array(frame))
         count += 1
+    return np.array(batches)
+
+
+def analyze_spectrograms(audio: str) -> np.ndarray:
+    batches = []
+    fs, data = wavfile.read(audio)
+    data = stereo_to_mono(data)
+    chunks = int(data.shape[0]/fs)
+
+    blockPrint()
+    for i in range(chunks):
+        chunk = data[i*fs:(i+1)*fs]
+        specgram, TimeAxis, FreqAxi = sF.spectrogram(chunk, fs, round(fs * 0.040),
+                                                     round(fs * 0.040))
+        fig, ax = plt.subplots()
+        plt.pcolormesh(specgram)
+        ax.set_axis_off()
+        plt.axis('off')
+        plt.tight_layout(pad=0)
+        plt.margins(0, 0)
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        fig.canvas.draw()
+
+        # Now we can save it to a numpy array.
+        img = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+        img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        batches.append(cv2.resize(img, (124, 124)))
+
+        plt.close(fig)
+    enablePrint()
     return np.array(batches)
 
 
@@ -151,8 +198,8 @@ def analyze_video_in_batches(video: str, batch_size: int = 32):
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     except ValueError:
         assert f"Cannot convert video {video} duration to integer"
-    duration = frame_count/fps
-    print(f'Current Video Proccessing FPS: {fps} with duration: {duration}')
+    duration = frame_count / fps
+    print(f"Current Video Proccessing FPS: {fps} with duration: {duration}")
     success = True
     count = 0
     batches = []
@@ -174,6 +221,37 @@ def analyze_video_in_batches(video: str, batch_size: int = 32):
 def save_frames(video: str, destination: str):
     frames, fps = analyze_video(video)
     for idx, frame in enumerate(frames):
-        Image.fromarray(frame).save(
-            os.path.join(destination, f'frame_{idx}_{fps}.png'))
+        Image.fromarray(frame).save(os.path.join(
+            destination, f"frame_{idx}_{fps}.png"))
 
+
+def stereo_to_mono(signal):
+    """
+    Input signal (stored in a numpy array) to MONO (if it is STEREO)
+    """
+
+    if signal.ndim == 2:
+        if signal.shape[1] == 1:
+            signal = signal.flatten()
+        else:
+            if signal.shape[1] == 2:
+                signal = (signal[:, 1] / 2) + (signal[:, 0] / 2)
+    return signal
+
+
+def get_spectrogram(audio: str, output: str) -> None:
+    """
+    Creates a spectrogram of the audio file
+    Args:
+        audio (str): The path to the audio file
+        output (str): The path to the output directory
+    """
+    fs, data = wavfile.read(audio)
+    data = stereo_to_mono(data)
+    fig, ax = plt.subplots(1)
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+    ax.axis("off")
+    pxx, freqs, bins, im = ax.specgram(x=data, Fs=fs, noverlap=384, NFFT=512)
+    ax.axis("off")
+    fig.savefig(output, dpi=100, frameon="false")
+    fig.clf()

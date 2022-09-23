@@ -7,32 +7,29 @@ from utils.utils import device
 
 
 class AuralExtractor(nn.Module):
-    def __init__(self, model: str = 'resnet', layers: int = 1) -> None:
+    def __init__(self, model: str = "resnet", layers: int = 1) -> None:
         super(AuralExtractor, self).__init__()
         self.name = model
         self._model = self.get_model()
         self.layers = abs(layers)
-        self.model = nn.Sequential(
-            *list(self._model.children())[:-self.layers])
+        self.model = nn.Sequential(*list(self._model.children())[: -self.layers])
         self.device = device()
         self.model.to(self.device)
         self.model.eval()
-        self.normalize = transforms.Normalize(mean=MEAN,
-                                              std=STD)
+        self.normalize = transforms.Normalize(mean=MEAN, std=STD)
         self.to_tensor = transforms.ToTensor()
 
     def get_model(self):
-        if(self.name == 'resnet'):
+        if self.name == "resnet":
             return models.resnet18(pretrained=True)
-        if(self.name == 'vgg'):
+        if self.name == "vgg":
             return models.vgg19(pretrained=True)
-        if(self.name == 'alexnet'):
+        if self.name == "alexnet":
             return models.alexnet(pretrained=True)
-        raise Exception(f'Wrong model selection: {self.name}')
+        raise Exception(f"Wrong model selection: {self.name}")
 
     def transform(self, x):
-        return self.normalize(self.to_tensor(
-            x)).unsqueeze(0).to(self.device)
+        return self.normalize(self.to_tensor(x)).unsqueeze(0).to(self.device)
 
     def forward(self, x):
         x = self.transform(x)
@@ -43,7 +40,5 @@ class AuralExtractor(nn.Module):
         with torch.no_grad():
             x = self.transform(x)
             out = self.model(x)
-            print(out.shape)
             out = torch.flatten(out)
-            print(out.shape)
         return out

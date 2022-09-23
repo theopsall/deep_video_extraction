@@ -9,38 +9,104 @@ from torch.utils.data import DataLoader
 
 from extractors.VisualExtractor import VisualExtractor
 from utils import utils
-from utils.dataset import VideoDataset
+from utils.dataset import VideoDataset, SpectrogramDataset
 
 
-def extract_visual(directory: str, model: str = 'vgg', layers: int = 2, output: str = 'output', save: bool = True) -> None:
+def extract_visual_features(
+    directory: str,
+    model: str = "vgg",
+    layers: int = 2,
+    flatten: bool = False,
+    output: str = "visual_features_output",
+    save: bool = True,
+) -> None:
     tree = utils.crawl_directory(directory)
     destination = None
     predictions = []
-    visual_extractor = VisualExtractor(model=model, layers=layers)
-    for filepath in tree:
-        print(f'Processing {filepath}')
-        dataset = VideoDataset(filepath)
-        dataloader = DataLoader(dataset, batch_size=16,
-                                shuffle=False, num_workers=2)
 
-        filename = filepath.split(os.sep)[-1].split('.')[0]
+    visual_extractor = VisualExtractor(model=model, layers=layers, flatten=flatten)
+    for filepath in tree:
+        print(f"Processing {filepath}")
+        dataset = VideoDataset(filepath)
+        dataloader = DataLoader(dataset, batch_size=16, shuffle=False, num_workers=2)
+
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
         classname = filepath.split(os.sep)[-2]
         destination = os.path.join(output, classname)
         if not utils.is_dir(destination):
             utils.create_dir(destination)
         predictions = visual_extractor.extract(dataloader)
 
-        if (save):
-            np.save(os.path.join(destination, f'{filename}.npy'), predictions)
+        if save:
+            np.save(os.path.join(destination, f"{filename}.npy"), predictions)
+
+        del predictions
+        empty_cache()
+        gc_collect()
+
+def extract_aural_features(
+    directory: str,
+    model: str = "resnet",
+    layers: int = 2,
+    flatten: bool = False,
+    output: str = "aural_features_output",
+    save: bool = True,
+) -> None:
+    tree = utils.crawl_directory(directory)
+    destination = None
+    predictions = []
+
+    visual_extractor = VisualExtractor(model=model, layers=layers, flatten=flatten)
+    for filepath in tree:
+        print(f"Processing {filepath}")
+        dataset = SpectrogramDataset(filepath)
+        dataloader = DataLoader(dataset, batch_size=16, shuffle=False, num_workers=2)
+
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
+        classname = filepath.split(os.sep)[-2]
+        destination = os.path.join(output, classname)
+        if not utils.is_dir(destination):
+            utils.create_dir(destination)
+        predictions = visual_extractor.extract(dataloader)
+
+        if save:
+            np.save(os.path.join(destination, f"{filename}.npy"), predictions)
 
         del predictions
         empty_cache()
         gc_collect()
 
 
-def extract_aural():
-    """
-    _summary_
-    """
-    # TODO:
-    pass
+
+def audio_extraction(
+    directory: str, output: str = "aural_output", save: bool = True
+) -> None:
+    tree = utils.crawl_directory(directory)
+    destination = None
+    predictions = []
+    for filepath in tree:
+        print(f"Processing {filepath}")
+
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
+        classname = filepath.split(os.sep)[-2]
+        destination = os.path.join(output, classname)
+        if not utils.is_dir(destination):
+            utils.create_dir(destination)
+        utils.sound_isolation(filepath, os.path.join(destination, f"{filename}.wav"))
+
+
+def extract_spectros(
+    directory: str, output: str = "spectrograms_output", save: bool = True
+) -> None:
+    tree = utils.crawl_directory(directory)
+    destination = None
+    predictions = []
+    for filepath in tree:
+        print(f"Getting Spectrogram  {filepath}")
+        filename = os.path.splitext(filepath.split(os.sep)[-1])[0]
+        classname = filepath.split(os.sep)[-2]
+        destination = os.path.join(output, classname)
+        if not utils.is_dir(destination):
+            utils.create_dir(destination)
+        utils.get_spectrogram(filepath, os.path.join(destination, f"{filename}.png"))
+        gc_collect()
