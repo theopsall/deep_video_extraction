@@ -30,7 +30,7 @@ def parse_arguments() -> argparse.Namespace:
         "extractVisual", help="Extract deep video features from a directory of videos"
     )
     extractVisual.add_argument(
-        "-i", "--input", required=False, help="Input Directory with videos"
+        "-i", "--input", required=True, help="Input Directory with videos"
     )
     extractVisual.add_argument(
         "-m", "--model", nargs="?", default="vgg", type=str, help="The pretrained model"
@@ -51,19 +51,25 @@ def parse_arguments() -> argparse.Namespace:
         help="Flatten last layer of feature vector",
     )
     extractVisual.add_argument(
-        "-s", "--store", required=False, type=bool, help="Store feature vectors"
+        "-s", "--store", action="store_true", help="Store feature vectors"
     )
     extractVisual.add_argument(
-        "-o", "--output", required=False, help="Output directory")
+        "-o", "--output", required=False, help="Output directory"
+    )
 
     extractAural = tasks.add_parser(
         "extractAural", help="Extract deep audio features from a directory of audios"
     )
     extractAural.add_argument(
-        "-i", "--input", required=False, help="Input Directory with audios"
+        "-i", "--input", required=True, help="Input Directory with audios"
     )
     extractAural.add_argument(
-        "-m", "--model", nargs="?", default="resnet", type=str, help="The pretrained model"
+        "-m",
+        "--model",
+        nargs="?",
+        default="resnet",
+        type=str,
+        help="The pretrained model",
     )
     extractAural.add_argument(
         "-l",
@@ -76,15 +82,13 @@ def parse_arguments() -> argparse.Namespace:
     extractAural.add_argument(
         "-f",
         "--flatten",
-        required=False,
-        type=bool,
+        action="store_true",
         help="Flatten last layer of feature vector",
     )
     extractAural.add_argument(
-        "-s", "--store", required=False, type=bool, help="Store feature vectors"
+        "-s", "--store", action="store_true", help="Store feature vectors"
     )
-    extractAural.add_argument(
-        "-o", "--output", required=False, help="Output directory")
+    extractAural.add_argument("-o", "--output", required=False, help="Output directory")
 
     sound = tasks.add_parser(
         "soundIsolation", help="Isolate the audio from videos input"
@@ -92,16 +96,13 @@ def parse_arguments() -> argparse.Namespace:
     sound.add_argument(
         "-i", "--input", required=False, help="Input Directory with videos"
     )
-    sound.add_argument("-o", "--output", required=False,
-                       help="Output directory")
+    sound.add_argument("-o", "--output", required=False, help="Output directory")
 
-    spectro = tasks.add_parser(
-        "spectro", help="Extract spectrograms from audio files")
+    spectro = tasks.add_parser("spectro", help="Extract spectrograms from audio files")
     spectro.add_argument(
         "-i", "--input", required=False, help="Input Directory with audio files"
     )
-    spectro.add_argument("-o", "--output", required=False,
-                         help="Output directory")
+    spectro.add_argument("-o", "--output", required=False, help="Output directory")
 
     return parser.parse_args()
 
