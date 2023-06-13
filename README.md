@@ -62,7 +62,7 @@ python deep_feature_extraction extractAural -i <input_directory> [-m <model>] [-
 ### 3. Isolate audio from videos
 
 ```bash
-python    deep_feature_extraction soundIsolation [-i <input_directory>] [-o <output_directory>]
+python deep_feature_extraction soundIsolation [-i <input_directory>] [-o <output_directory>]
 ```
 
 `-i` , `--input`: Input directory with videos</br>
@@ -71,7 +71,7 @@ python    deep_feature_extraction soundIsolation [-i <input_directory>] [-o <out
 ### 4.Extract spectrograms from audio files
 
 ```bash
-python    deep_feature_extraction spectro [-i <input_directory>] [-o <output_directory>]
+python deep_feature_extraction spectro [-i <input_directory>] [-o <output_directory>]
 ```
 
 `-i`, `--input`: Input directory with audio files</br>
