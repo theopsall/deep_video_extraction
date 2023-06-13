@@ -1,10 +1,35 @@
-"""Console script for deep_video_extraction."""
 import argparse
 
-import featureExtraction as fE
-from utils.utils import is_dir
 
-
+def add_common_args(parser):
+    parser.add_argument(
+        "-i", "--input", required=True, help="Input Directory"
+    )
+    parser.add_argument(
+        "-m", "--model", nargs="?", default="vgg", type=str, help="The pretrained model"
+    )
+    parser.add_argument(
+        "-l",
+        "--layers",
+        nargs="?",
+        default=-1,
+        type=int,
+        help="Number of Layers to exclude from the pretrained model",
+    )
+    parser.add_argument(
+        "-f",
+        "--flatten",
+        required=False,
+        type=bool,
+        help="Flatten last layer of feature vector",
+    )
+    parser.add_argument(
+        "-s", "--store", action="store_true", help="Store feature vectors"
+    )
+    parser.add_argument(
+        "-o", "--output", required=False, help="Output directory"
+    )
+    
 def parse_arguments() -> argparse.Namespace:
     """
     Returns:
@@ -29,66 +54,13 @@ def parse_arguments() -> argparse.Namespace:
     extractVisual = tasks.add_parser(
         "extractVisual", help="Extract deep video features from a directory of videos"
     )
-    extractVisual.add_argument(
-        "-i", "--input", required=True, help="Input Directory with videos"
-    )
-    extractVisual.add_argument(
-        "-m", "--model", nargs="?", default="vgg", type=str, help="The pretrained model"
-    )
-    extractVisual.add_argument(
-        "-l",
-        "--layers",
-        nargs="?",
-        default=-1,
-        type=int,
-        help="Number of Layers to exclude from the pretrained model",
-    )
-    extractVisual.add_argument(
-        "-f",
-        "--flatten",
-        required=False,
-        type=bool,
-        help="Flatten last layer of feature vector",
-    )
-    extractVisual.add_argument(
-        "-s", "--store", action="store_true", help="Store feature vectors"
-    )
-    extractVisual.add_argument(
-        "-o", "--output", required=False, help="Output directory"
-    )
+    add_common_args(extractVisual)
 
     extractAural = tasks.add_parser(
         "extractAural", help="Extract deep audio features from a directory of audios"
     )
-    extractAural.add_argument(
-        "-i", "--input", required=True, help="Input Directory with audios"
-    )
-    extractAural.add_argument(
-        "-m",
-        "--model",
-        nargs="?",
-        default="resnet",
-        type=str,
-        help="The pretrained model",
-    )
-    extractAural.add_argument(
-        "-l",
-        "--layers",
-        nargs="?",
-        default=-1,
-        type=int,
-        help="Number of Layers to exclude from the pretrained model",
-    )
-    extractAural.add_argument(
-        "-f",
-        "--flatten",
-        action="store_true",
-        help="Flatten last layer of feature vector",
-    )
-    extractAural.add_argument(
-        "-s", "--store", action="store_true", help="Store feature vectors"
-    )
-    extractAural.add_argument("-o", "--output", required=False, help="Output directory")
+  
+    add_common_args(extractAural)
 
     sound = tasks.add_parser(
         "soundIsolation", help="Isolate the audio from videos input"
@@ -105,48 +77,3 @@ def parse_arguments() -> argparse.Namespace:
     spectro.add_argument("-o", "--output", required=False, help="Output directory")
 
     return parser.parse_args()
-
-
-def main():
-    """Console script for deep_video_extraction."""
-    args = parse_arguments()
-
-    if args.task == "extractVisual":
-        if not is_dir(args.input):
-            raise Exception("Videos directory not found!")
-        elif not args.model:
-            print(f"Model is empty, using default")
-            args.model = "vgg"
-        fE.extract_visual_features(
-            args.input,
-            model=args.model,
-            layers=args.layers,
-            flatten=args.flatten,
-            save=args.store,
-            output=args.output,
-        )
-    if args.task == "extractAural":
-        if not is_dir(args.input):
-            raise Exception("Audio directory not found!")
-        elif not args.model:
-            print(f"Model is empty, using default")
-            args.model = "vgg"
-        fE.extract_aural_features(
-            args.input,
-            model=args.model,
-            layers=args.layers,
-            save=args.store,
-        )
-    elif args.task == "soundIsolation":
-        if not is_dir(args.input):
-            raise Exception("Videos directory not found!")
-        fE.audio_extraction(args.input)
-    elif args.task == "spectro":
-        if not is_dir(args.input):
-            raise Exception("Videos directory not found!")
-        fE.extract_spectros(args.input)
-    else:
-        print(
-            f"Task {args.task} not Found. Please check the script description with --help option"
-        )
-    return 0
