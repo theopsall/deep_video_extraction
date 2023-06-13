@@ -1,5 +1,4 @@
 from gc import collect as gc_collect
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,7 +6,6 @@ from config import MEAN, STD
 from numpy import ndarray
 from torch.utils.data import DataLoader
 from torchvision import models, transforms
-from tqdm import tqdm
 from utils.utils import clean_GPU, device
 
 
@@ -21,12 +19,13 @@ class VisualExtractor(nn.Module):
         self._model = self.get_model()
         self.layers = abs(layers)
         self.flatten = flatten
-        self.model = nn.Sequential(*list(self._model.children())[: -self.layers])
+        self.model = nn.Sequential(*list(self._model.features.children()))
         self.device = device()
         self.model.to(self.device)
         self.model.eval()
         self.normalize = transforms.Normalize(mean=MEAN, std=STD)
         self.to_tensor = transforms.ToTensor()
+        
 
     def get_model(self):
         if self.name == "resnet":
