@@ -28,7 +28,7 @@ nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
 opencv-python==4.7.0.72
 packaging==23.1
-Pillow==9.5.0
+Pillow==10.3.0
 pyAudioAnalysis==0.3.14
 pyparsing==3.0.9
 python-dateutil==2.8.2
