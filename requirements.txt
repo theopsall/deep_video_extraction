@@ -32,7 +32,7 @@ Pillow==10.3.0
 pyAudioAnalysis==0.3.14
 pyparsing==3.0.9
 python-dateutil==2.8.2
-requests==2.31.0
+requests==2.32.2
 scipy==1.10.1
 six==1.16.0
 sympy==1.12
